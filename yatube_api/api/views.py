@@ -45,9 +45,14 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
-    queryset = Follow.objects.filter(user=1) #Возвращает все подписки пользователя, сделавшего запрос. Анонимные запросы запрещены.
+    #queryset = Follow.objects.select_related('user') #Возвращает все подписки пользователя, сделавшего запрос. Анонимные запросы запрещены.
     serializer_class = FollowSerializer
     permission_classes = (AuthorPermission, permissions.IsAuthenticated)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        user=get_object_or_404(Follow, user=self.request.user) #смотри сюда. попробуй по примеру коментов
+        new_queryset = Comment.objects.filter(post=post)
+        return new_queryset
