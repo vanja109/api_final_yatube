@@ -1,5 +1,3 @@
-from turtle import title
-
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -42,12 +40,12 @@ class Comment(models.Model):
 
 
 class Follow(models.Model):
-    user = models.ForeignKey(   #подписчик
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='follower'
     )
-    following = models.ForeignKey(  #автор
+    following = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='following'
