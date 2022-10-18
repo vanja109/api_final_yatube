@@ -1,6 +1,7 @@
 from urllib import request
-from posts.models import Comment, Follow, Group, Post
-from rest_framework import permissions, viewsets
+from posts.models import Comment, Follow, Group, Post, User
+from rest_framework import filters, permissions, viewsets
+from rest_framework.pagination import LimitOffsetPagination
 from .permissions import AuthorPermission
 from django.shortcuts import get_object_or_404
 from .pagination import PostsPagination
@@ -12,7 +13,7 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.select_related('group', 'author')
     serializer_class = PostSerializer
     permission_classes = (AuthorPermission, permissions.IsAuthenticatedOrReadOnly)
-    #pagination_class = PostsPagination
+    pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -45,14 +46,14 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
-    #queryset = Follow.objects.select_related('user') #Возвращает все подписки пользователя, сделавшего запрос. Анонимные запросы запрещены.
     serializer_class = FollowSerializer
     permission_classes = (AuthorPermission, permissions.IsAuthenticated)
+    filter_backends = ( filters.SearchFilter,)
+    search_fields = ('following__username',)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        user=get_object_or_404(Follow, user=self.request.user) #смотри сюда. попробуй по примеру коментов
-        new_queryset = Comment.objects.filter(post=post)
-        return new_queryset
+        user=self.request.user
+        return  user.follower.all()
