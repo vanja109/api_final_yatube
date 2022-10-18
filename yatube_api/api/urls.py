@@ -1,11 +1,9 @@
-from django.urls import path
 from api.views import CommentViewSet, FollowViewSet, GroupViewSet, PostViewSet
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from rest_framework.authtoken import views
-
 
 app_name = 'api'
 

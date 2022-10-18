@@ -1,4 +1,5 @@
 from turtle import title
+
 from django.contrib.auth import get_user_model
 from django.db import models
 
